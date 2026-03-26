@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keven Cordeiro — Design Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06060f;
+    --bg2: #0d0d1a;
+    --bg3: #111124;
+    --cyan: #00f0ff;
+    --violet: #9f5fff;
+    --white: #f0f0f8;
+    --muted: #cbcbd1;
+    --card-border: rgba(0,240,255,0.12);
+    --glow-cyan: 0 0 40px rgba(0,240,255,0.15);
+    --glow-violet: 0 0 40px rgba(159,95,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  #cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--cyan); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: screen;
+  }
+  #cursor-trail {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(0,240,255,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: all 0.15s ease;
+  }
+
+  /* PARTICLES CANVAS */
+  #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.5rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(20px);
+    background: rgba(6,6,15,0.6);
+    border-bottom: 0.5px solid var(--card-border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+  nav a {
+    color: var(--muted); text-decoration: none;
+    font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  nav a:hover { color: var(--cyan); }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 6rem 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-tag {
+    display: inline-block;
+    border: 0.5px solid var(--card-border);
+    color: var(--cyan); font-size: 0.75rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.4rem 1.2rem; border-radius: 50px;
+    margin-bottom: 2rem;
+    animation: floatY 3s ease-in-out infinite;
+    background: rgba(0,240,255,0.05);
+  }
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(4rem, 12vw, 10rem);
+    font-weight: 800; line-height: 0.9;
+    letter-spacing: -0.03em;
+    animation: floatY 4s ease-in-out infinite;
+  }
+  .hero-name .line1 { display: block; color: var(--white); }
+  .hero-name .line2 {
+    display: block;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: 1rem; color: var(--muted);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    animation: floatY 3.5s ease-in-out 0.5s infinite;
+  }
+  .hero-cta {
+    margin-top: 3rem; display: flex; gap: 1rem; justify-content: center;
+    animation: floatY 4s ease-in-out 1s infinite;
+  }
+  .btn-primary {
+    padding: 0.85rem 2rem; border-radius: 50px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: var(--bg); font-weight: 700; font-size: 0.85rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    border: none; cursor: none; text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 40px rgba(0,240,255,0.3); }
+  .btn-ghost {
+    padding: 0.85rem 2rem; border-radius: 50px;
+    border: 0.5px solid var(--card-border);
+    color: var(--white); font-size: 0.85rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: none; text-decoration: none;
+    transition: border-color 0.3s, color 0.3s, transform 0.3s;
+    background: transparent;
+  }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-4px); }
+
+  .scroll-indicator {
+    position: absolute; bottom: 2.5rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    color: var(--muted); font-size: 0.7rem; letter-spacing: 0.2em;
+    animation: floatY 2s ease-in-out infinite;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+  }
+
+  /* ORBIT RING */
+  .orbit-container {
+    position: absolute; width: 500px; height: 500px;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .orbit-ring {
+    position: absolute; border-radius: 50%;
+    border: 0.5px solid rgba(0,240,255,0.08);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+  }
+  .orbit-ring:nth-child(1) { width: 300px; height: 300px; animation: spin 20s linear infinite; }
+  .orbit-ring:nth-child(2) { width: 420px; height: 420px; animation: spin 30s linear infinite reverse; }
+  .orbit-ring:nth-child(3) { width: 520px; height: 520px; animation: spin 45s linear infinite; }
+  .orbit-dot {
+    position: absolute; width: 6px; height: 6px;
+    background: var(--cyan); border-radius: 50%;
+    top: -3px; left: 50%; margin-left: -3px;
+    box-shadow: 0 0 12px var(--cyan);
+  }
+  .orbit-dot.violet { background: var(--violet); box-shadow: 0 0 12px var(--violet); }
+
+  /* ABOUT */
+  #about {
+    padding: 8rem 4rem;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6rem; align-items: center; max-width: 1200px; margin: 0 auto;
+  }
+  .section-label {
+    font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--cyan); margin-bottom: 1rem;
+  }
+  .about-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800; line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+  .about-text {
+    color: var(--muted); line-height: 1.8; font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .about-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--card-border);
+    border-radius: 20px; padding: 2.5rem;
+    transform: rotate(-2deg);
+    box-shadow: var(--glow-cyan);
+    transition: transform 0.4s;
+    position: relative; overflow: hidden;
+  }
+  .about-card:hover { transform: rotate(0deg) translateY(-8px); }
+  .about-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+  }
+  .info-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 0.5px solid rgba(255,255,255,0.05);
+    font-size: 0.9rem;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--muted); font-size: 0.8rem; }
+  .info-value { color: var(--white); font-weight: 500; }
+  .info-value.accent { color: var(--cyan); }
+
+  /* SKILLS */
+  #skills {
+    padding: 6rem 4rem; max-width: 1200px; margin: 0 auto;
+    text-align: center;
+  }
+  .skills-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800;
+    margin-bottom: 1rem;
+  }
+  .skills-subtitle { color: var(--muted); margin-bottom: 4rem; }
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    max-width: 700px; margin: 0 auto;
+  }
+  .skill-card {
+    background: var(--bg2); border: 0.5px solid var(--card-border);
+    border-radius: 16px; padding: 2rem 1.5rem;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    cursor: default;
+    animation: floatY 3s ease-in-out infinite;
+  }
+  .skill-card:nth-child(2) { animation-delay: 0.5s; }
+  .skill-card:nth-child(3) { animation-delay: 1s; }
+  .skill-card:nth-child(4) { animation-delay: 0.3s; }
+  .skill-card:nth-child(5) { animation-delay: 0.8s; }
+  .skill-card:hover {
+    transform: translateY(-12px);
+    box-shadow: var(--glow-cyan);
+    border-color: rgba(0,240,255,0.3);
+  }
+  .skill-icon { font-size: 2.5rem; }
+  .skill-name {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .skill-level {
+    font-size: 0.75rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .skill-bar {
+    width: 100%; height: 2px;
+    background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  /* EXPERIENCE */
+  #experience {
+    padding: 8rem 4rem; max-width: 900px; margin: 0 auto;
+  }
+  .exp-header { text-align: center; margin-bottom: 4rem; }
+  .exp-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800;
+  }
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+    background: linear-gradient(to bottom, var(--cyan), var(--violet), transparent);
+  }
+  .timeline-item {
+    position: relative; margin-bottom: 3rem;
+    padding-left: 2.5rem;
+    animation: floatX 4s ease-in-out infinite;
+  }
+  .timeline-item:nth-child(2) { animation-delay: 1s; }
+  .timeline-dot {
+    position: absolute; left: -2.15rem; top: 0.25rem;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--cyan);
+    box-shadow: 0 0 12px var(--cyan);
+  }
+  .timeline-date {
+    font-size: 0.75rem; color: var(--cyan); letter-spacing: 0.2em;
+    text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .timeline-role {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1.3rem; margin-bottom: 0.5rem;
+  }
+  .timeline-org {
+    font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem;
+  }
+  .timeline-desc {
+    color: rgba(240,240,248,0.75); line-height: 1.7; font-size: 0.95rem;
+  }
+
+  /* EDUCATION */
+  #education {
+    padding: 6rem 4rem; max-width: 1200px; margin: 0 auto;
+  }
+  .edu-header { text-align: center; margin-bottom: 4rem; }
+  .edu-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800;
+  }
+  .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .edu-card {
+    background: var(--bg2); border: 0.5px solid var(--card-border);
+    border-radius: 20px; padding: 2rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .edu-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--violet), var(--cyan));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s;
+  }
+  .edu-card:hover { transform: translateY(-8px) rotate(0.5deg); box-shadow: var(--glow-violet); }
+  .edu-card:hover::after { transform: scaleX(1); }
+  .edu-badge {
+    display: inline-block; font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 0.3rem 0.8rem;
+    border-radius: 50px; margin-bottom: 1rem;
+    background: rgba(159,95,255,0.1); color: var(--violet);
+    border: 0.5px solid rgba(159,95,255,0.3);
+  }
+  .edu-course {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1.1rem; margin-bottom: 0.5rem;
+  }
+  .edu-institution {
+    color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem;
+  }
+  .edu-year { color: var(--cyan); font-size: 0.8rem; }
+
+  /* CONTACT */
+  #contact {
+    padding: 8rem 4rem; text-align: center; max-width: 800px; margin: 0 auto;
+  }
+  .contact-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+  .contact-sub { color: var(--muted); font-size: 1rem; margin-bottom: 3rem; }
+  .contact-card {
+    background: var(--bg2); border: 0.5px solid var(--card-border);
+    border-radius: 24px; padding: 3rem;
+    box-shadow: var(--glow-cyan);
+    animation: floatY 5s ease-in-out infinite;
+    position: relative; overflow: hidden;
+  }
+  .contact-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,240,255,0.03), rgba(159,95,255,0.03));
+  }
+  .contact-list { list-style: none; display: flex; flex-direction: column; gap: 1.2rem; }
+  .contact-item {
+    display: flex; align-items: center; gap: 1rem;
+    color: var(--white); font-size: 1rem;
+    padding: 1rem 1.5rem; border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 0.5px solid rgba(255,255,255,0.06);
+    transition: background 0.3s, border-color 0.3s;
+    text-decoration: none;
+  }
+  .contact-item:hover { background: rgba(0,240,255,0.05); border-color: rgba(0,240,255,0.2); }
+  .contact-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(0,240,255,0.1); border: 0.5px solid rgba(0,240,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .contact-detail { display: flex; flex-direction: column; align-items: flex-start; }
+  .contact-type { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .contact-value { font-size: 0.95rem; color: var(--white); }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 2rem;
+    border-top: 0.5px solid var(--card-border);
+    color: var(--muted); font-size: 0.8rem;
+    position: relative; z-index: 1;
+  }
+
+  /* ANIMATIONS */
+  @keyframes floatY {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes floatX {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+  }
+  @keyframes spin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    #about { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 3rem; }
+    #skills, #experience, #education, #contact { padding: 4rem 1.5rem; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .edu-grid { grid-template-columns: 1fr; }
+    .about-card { transform: none; }
+  }
+  .contact-icon i {
+  color: var(--cyan);
+  font-size: 1.1rem;
+  transition: 0.3s;
+ }
+
+.contact-item:hover i {
+  color: var(--violet);
+  transform: scale(1.2);
+ }
+
+ .skill-icon i {
+  font-size: 2.2rem;
+  color: var(--cyan);
+ }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+<canvas id="particles"></canvas>
+
+<nav>
+  <div class="nav-logo">KC</div>
+  <ul>
+    <li><a href="#about">Sobre</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experiência</a></li>
+    <li><a href="#education">Formação</a></li>
+    <li><a href="#contact">Contato</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="orbit-container">
+    <div class="orbit-ring"><div class="orbit-dot"></div></div>
+    <div class="orbit-ring"><div class="orbit-dot violet"></div></div>
+    <div class="orbit-ring"><div class="orbit-dot"></div></div>
+  </div>
+
+  <div class="hero-tag">✦ Designer Gráfico & Técnico em TI</div>
+  <h1 class="hero-name">
+    <span class="line1">KEVEN</span>
+    <span class="line2">CORDEIRO</span>
+  </h1>
+  <p class="hero-sub">Fortaleza, Ceará — Criatividade em órbita</p>
+  <div class="hero-cta">
+    <a href="#skills" class="btn-primary">Ver Skills</a>
+    <a href="#contact" class="btn-ghost">Entrar em Contato</a>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="fade-in">
+    <p class="section-label">✦ Sobre mim</p>
+    <h2 class="about-title">Design que<br><span style="background: linear-gradient(90deg,var(--cyan),var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">comunica</span></h2>
+    <p class="about-text">Estudante de Técnico em Informática com experiência como monitor em escola de Design. Desenvolvo projetos autorais voltados para Social Media, incluindo criação de identidade visual própria e produção de anúncios digitais.</p>
+    <p class="about-text">Sou organizado, persistente e estou em constante aprimoramento profissional, buscando oportunidade na área de Design para aplicar minhas habilidades criativas e estratégicas.</p>
+  </div>
+
+  <div class="about-card fade-in">
+    <div class="info-row">
+      <span class="info-label">Nome</span>
+      <span class="info-value">Keven Cordeiro</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Localização</span>
+      <span class="info-value">Fortaleza, CE</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Área</span>
+      <span class="info-value accent">Design Gráfico & TI</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Foco</span>
+      <span class="info-value">Social Media & Identidade Visual</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Status</span>
+      <span class="info-value accent">Disponível para projetos ✦</span>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="fade-in">
+    <p class="section-label">✦ Ferramentas</p>
+    <h2 class="skills-title">Skills</h2>
+    <p class="skills-subtitle">Ferramentas que domino para criar experiências visuais</p>
+  </div>
+
+  <div class="skills-grid fade-in">
+    <div class="skill-card">
+      <div class="skill-icon"><i class="fa-brands fa-figma"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallpaper-icon lucide-wallpaper"><path d="M12 17v4"/><path d="M8 21h8"/><path d="m9 17 6.1-6.1a2 2 0 0 1 2.81.01L22 15"/><circle cx="8" cy="9" r="2"/><rect x="2" y="3" width="20" height="14" rx="2"/></svg></i></div>
+      <div class="skill-name">Figma</div>
+      <div class="skill-level">Avançado</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon"><i class="fa-solid fa-image"></i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-line-icon lucide-pen-line"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></div>
+      <div class="skill-name">Photoshop</div>
+      <div class="skill-level">Intermediário</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon"><i class="fa-solid fa-pen-nib"></i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-vector-square-icon lucide-vector-square"><path d="M19.5 7a24 24 0 0 1 0 10"/><path d="M4.5 7a24 24 0 0 0 0 10"/><path d="M7 19.5a24 24 0 0 0 10 0"/><path d="M7 4.5a24 24 0 0 1 10 0"/><rect x="17" y="17" width="5" height="5" rx="1"/><rect x="17" y="2" width="5" height="5" rx="1"/><rect x="2" y="17" width="5" height="5" rx="1"/><rect x="2" y="2" width="5" height="5" rx="1"/></svg></div>
+      <div class="skill-name">Illustrator</div>
+      <div class="skill-level">Intermediário</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:70%"></div></div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon"><i class="fa-solid fa-bezier-curve"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette-icon lucide-palette"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></svg></i></div>
+      <div class="skill-name">CorelDRAW</div>
+      <div class="skill-level">Básico</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:40%"></div></div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon"><i class="fa-solid fa-mobile-screen"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone-icon lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></i></div>
+      <div class="skill-name">Social Media</div>
+      <div class="skill-level">Avançado</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:85%"></div></div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon"><i class="fa-solid fa-laptop-code"></i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-app-window-icon lucide-app-window"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/></svg></div>
+      <div class="skill-name">Informática</div>
+      <div class="skill-level">Técnico</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:80%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="exp-header fade-in">
+    <p class="section-label">✦ Trajetória</p>
+    <h2 class="exp-title">Experiência</h2>
+  </div>
+
+  <div class="timeline fade-in">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">2023</div>
+      <h3 class="timeline-role">Monitor de Curso de Design</h3>
+      <p class="timeline-org">Escola de Design — INFOR</p>
+      <p class="timeline-desc">Auxiliei alunos no aprendizado de conceitos básicos de design gráfico e no uso de ferramentas digitais. Durante essa experiência, tive a oportunidade de ministrar uma aula, compartilhando conhecimentos sobre criação de artes digitais utilizando principalmente Figma, além de noções de Adobe Photoshop e Adobe Illustrator. Essa experiência contribuiu para o desenvolvimento das minhas habilidades de comunicação, criatividade e colaboração.</p>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot" style="border-color: var(--violet); box-shadow: 0 0 12px var(--violet);"></div>
+      <div class="timeline-date" style="color: var(--violet);">Em andamento</div>
+      <h3 class="timeline-role">Projetos Autorais — Social Media</h3>
+      <p class="timeline-org">Freelance / Independente</p>
+      <p class="timeline-desc">Desenvolvimento de projetos voltados para Social Media, incluindo criação de identidade visual própria e produção de anúncios digitais para redes sociais.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="edu-header fade-in">
+    <p class="section-label">✦ Formação</p>
+    <h2 class="edu-title">Escolaridade</h2>
+  </div>
+
+  <div class="edu-grid fade-in">
+    <div class="edu-card">
+      <span class="edu-badge">Em andamento</span>
+      <h3 class="edu-course">Ensino Médio Integrado — Técnico em TI</h3>
+      <p class="edu-institution">EEEP Luiza de Teodoro Vieira</p>
+      <p class="edu-year">Formação profissionalizante em Tecnologia da Informação • Previsão: 2026</p>
+    </div>
+
+    <div class="edu-card">
+      <span class="edu-badge" style="background: rgba(0,240,255,0.1); color: var(--cyan); border-color: rgba(0,240,255,0.3);">Concluído</span>
+      <h3 class="edu-course">Curso de Design Gráfico</h3>
+      <p class="edu-institution">Monkey</p>
+      <p class="edu-year">Conclusão: 2021 – 2022</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="fade-in">
+    <p class="section-label">✦ Vamos trabalhar juntos</p>
+    <h2 class="contact-title">Entre em<br><span style="background: linear-gradient(90deg,var(--cyan),var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Contato</span></h2>
+    <p class="contact-sub">Aberto a projetos, freelas e oportunidades na área de Design.</p>
+  </div>
+
+  <div class="contact-card fade-in">
+    <ul class="contact-list">
+      <li>
+        <a class="contact-item" href="mailto:agentekofc@gmail.com">
+          <div class="contact-icon"><i class="fa-solid fa-envelope"></i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></div>
+          <div class="contact-detail">
+            <span class="contact-type">Email</span>
+            <span class="contact-value">agentekofc@gmail.com</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a class="contact-item" href="tel:+5585985305616">
+          <div class="contact-icon"><i class="fa-solid fa-phone"></i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone-icon lucide-phone"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></div>
+          <div class="contact-detail">
+            <span class="contact-type">Telefone / WhatsApp</span>
+            <span class="contact-value">+55 85 98530 5616</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <div class="contact-item">
+          <div class="contact-icon"><i class="fa-solid fa-location-dot"></i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-icon lucide-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></div>
+          <div class="contact-detail">
+            <span class="contact-type">Localização</span>
+            <span class="contact-value">Fortaleza, Ceará — Brasil</span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p>✦ Keven Cordeiro — Design Portfolio — 2025</p>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+let mx = 0, my = 0, tx = 0, ty = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+});
+function animTrail() {
+  tx += (mx - tx) * 0.12; ty += (my - ty) * 0.12;
+  trail.style.left = tx + 'px'; trail.style.top = ty + 'px';
+  requestAnimationFrame(animTrail);
+}
+animTrail();
+document.querySelectorAll('a, button, .skill-card, .edu-card, .contact-item').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.width = '20px'; cursor.style.height = '20px'; cursor.style.background = 'var(--violet)'; });
+  el.addEventListener('mouseleave', () => { cursor.style.width = '12px'; cursor.style.height = '12px'; cursor.style.background = 'var(--cyan)'; });
+});
+
+// PARTICLES
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+    size: Math.random() * 1.5 + 0.3,
+    color: Math.random() > 0.5 ? '0,240,255' : '159,95,255',
+    opacity: Math.random() * 0.4 + 0.1
+  });
+}
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${p.color},${p.opacity})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// FADE IN
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
